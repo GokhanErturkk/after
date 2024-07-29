@@ -4,17 +4,18 @@ function after(count, callback, err_cb) {
     var bail = false
     err_cb = err_cb || noop
     proxy.count = count
-
     return (count === 0) ? callback() : proxy
-
+    
     function proxy(err, result) {
+       
         if (proxy.count <= 0) {
             throw new Error('after called too many times')
         }
         --proxy.count
-
+        console.log(proxy.count)
         // after first error, rest are passed to err_cb
         if (err) {
+            console.log("first")
             bail = true
             callback(err)
             // future error callbacks will go to error handler
@@ -26,3 +27,26 @@ function after(count, callback, err_cb) {
 }
 
 function noop() {}
+
+next = after(3, logItWorks, function(err){
+    console.log("err")
+})
+
+//// part1
+// next()
+// next(new Error(1), 'myresult')
+// next(null, 'myresult')
+
+///// part2 
+// next()
+// next()
+// next(null, 'myresult')
+
+//// part 3
+// next(new Error(1))
+// next(new Error(2))
+// next(new Error(2))
+
+function logItWorks(x,y) {
+    console.log(`x ${x}, y ${y}`)
+}
